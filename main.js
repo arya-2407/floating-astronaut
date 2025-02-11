@@ -259,20 +259,22 @@ function render(timestamp) {
     // Move Jellyfish in a Circular Path
     gPush();
         animateJellyfish(dt); // Apply floating movement
-
-        // Draw Jellyfish Body
         drawJellyfishBody();
-
-        // Draw Tentacles with Animation
         drawTentacle(-0.5, 0); // Left tentacle
         drawTentacle(0, 1);    // Middle tentacle
         drawTentacle(0.5, 2);  // Right tentacle
+    gPop();
+
+    // Draw Astronaut Floating
+    gPush();
+        drawHelmet();
     gPop();
 
     if (animFlag) {
         window.requestAnimFrame(render);
     }
 }
+
 
 function drawJellyfishBody() {
     // Draw the larger disk (head)
@@ -307,6 +309,36 @@ function drawTentacle(xOffset, tentacleIndex) {
       }
     gPop();
 }
+
+function drawHelmet() {
+    gPush();
+        // Move to head position
+        gTranslate(0, 2, 0);
+        
+        // Rotate to face southwest (left + slightly down)
+        gRotate(-30, 0, 1, 0);  // Rotate left
+        gRotate(15, 1, 0, 0); // Tilt downward
+
+        // Helmet Outer Shell (White Sphere, Smaller & Horizontally Stretched)
+        gPush();
+            gScale(0.9, 1.0, 1.2); // Make it slightly smaller
+            setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White helmet
+            drawSphere();
+        gPop();
+
+        // Visor (Gold, Adjusted to Fit)
+        gPush();
+            gTranslate(0, 0, 0.7);  // Move forward (relative to helmet rotation)
+            gScale(0.7, 0.6, 0.65);  // Make visor proportionally smaller
+            setColor(vec4(0.8, 0.5, 0.1, 1.0)); // Golden visor
+            drawSphere();
+        gPop();
+
+    gPop();
+}
+
+
+
 
 
 
