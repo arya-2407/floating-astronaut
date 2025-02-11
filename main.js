@@ -217,97 +217,98 @@ function gPush() {
     MS.push(modelMatrix);
 }
 
+var TIME = 0; // Time tracker for animation
+var prevTime = 0; // Track the last frame's time
+
+let jellyfishAngle = 0; // Angle for circular motion
+
+function animateJellyfish(dt) {
+    jellyfishAngle += dt * 20; // Adjust speed (20 degrees per second)
+    
+    let x = Math.cos(radians(jellyfishAngle)) * 3; // Move in X
+    let y = Math.sin(radians(jellyfishAngle * 0.7)) * 1.5; // Up & Down bobbing
+    let z = Math.sin(radians(jellyfishAngle)) * 3; // Move in Z
+
+    gTranslate(x, 2 + y, z); // Move the entire jellyfish (without rotation)
+}
+
 
 function render(timestamp) {
-    
-    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
-    eye = vec3(0,0,10);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Compute delta time (dt)
+    let dt = (timestamp - prevTime) / 1000.0; // Convert from ms to seconds
+    prevTime = timestamp;
+    if (animFlag) TIME += dt; // Increment animation time
+
+    eye = vec3(0, 0, 10);
     MS = []; // Initialize modeling matrix stack
 	
-	// initialize the modeling matrix to identity
+    // Initialize the modeling matrix to identity
     modelMatrix = mat4();
     
-    // set the camera matrix
-    viewMatrix = lookAt(eye, at , up);
+    // Set the camera matrix
+    viewMatrix = lookAt(eye, at, up);
    
-    // set the projection matrix
+    // Set the projection matrix
     projectionMatrix = ortho(left, right, bottom, ytop, near, far);
     
-    
-    // set all the matrices
+    // Set all the matrices
     setAllMatrices();
-    
-	if( animFlag )
-    {
-		// dt is the change in time or delta time from the last frame to this one
-		// in animation typically we have some property or degree of freedom we want to evolve over time
-		// For example imagine x is the position of a thing.
-		// To get the new position of a thing we do something called integration
-		// the simpelst form of this looks like:
-		// x_new = x + v*dt
-		// That is, the new position equals the current position + the rate of of change of that position (often a velocity or speed) times the change in time
-		// We can do this with angles or positions, the whole x,y,z position, or just one dimension. It is up to us!
-		dt = (timestamp - prevTime) / 1000.0;
-		prevTime = timestamp;
-	}
-	
-	// Sphere example
-	gPush();
-		// Put the sphere where it should be!
-		gTranslate(spherePosition[0],spherePosition[1],spherePosition[2]);
-		gPush();
-		{
-			// Draw the sphere!
-			setColor(vec4(1.0,0.0,0.0,1.0));
-			drawSphere();
-		}
-		gPop();
-	gPop();
-    
-	// Cube example
-	gPush();
-		gTranslate(cubePosition[0],cubePosition[1],cubePosition[2]);
-		gPush();
-		{
-			setColor(vec4(0.0,1.0,0.0,1.0));
-			// Here is an example of integration to rotate the cube around the y axis at 30 degrees per second
-			// new cube rotation around y = current cube rotation around y + 30deg/s*dt
-			cubeRotation[1] = cubeRotation[1] + 30*dt;
-			// This calls a simple helper function to apply the rotation (theta, x, y, z), 
-			// where x,y,z define the axis of rotation. Here is is the y axis, (0,1,0).
-			gRotate(cubeRotation[1],0,1,0);
-			drawCube();
-		}
-		gPop();
-	gPop();
-    
-	// Cylinder example
-	gPush();
-		gTranslate(cylinderPosition[0],cylinderPosition[1],cylinderPosition[2]);
-		gPush();
-		{
-			setColor(vec4(0.0,0.0,1.0,1.0));
-			cylinderRotation[1] = cylinderRotation[1] + 60*dt;
-			gRotate(cylinderRotation[1],0,1,0);
-			drawCylinder();
-		}
-		gPop();
-	gPop();	
-    
-	// Cone example
-	gPush();
-		gTranslate(conePosition[0],conePosition[1],conePosition[2]);
-		gPush();
-		{
-			setColor(vec4(1.0,1.0,0.0,1.0));
-			coneRotation[1] = coneRotation[1] + 90*dt;
-			gRotate(coneRotation[1],0,1,0);
-			drawCone();
-		}
-		gPop();
-	gPop();
-    
-    if( animFlag )
+
+    // Move Jellyfish in a Circular Path
+    gPush();
+        animateJellyfish(dt); // Apply floating movement
+
+        // Draw Jellyfish Body
+        drawJellyfishBody();
+
+        // Draw Tentacles with Animation
+        drawTentacle(-0.5, 0); // Left tentacle
+        drawTentacle(0, 1);    // Middle tentacle
+        drawTentacle(0.5, 2);  // Right tentacle
+    gPop();
+
+    if (animFlag) {
         window.requestAnimFrame(render);
+    }
 }
+
+function drawJellyfishBody() {
+    // Draw the larger disk (head)
+    gPush();
+        gTranslate(0, 2.5, 0); // Position above the body
+        gScale(1.2, 0.7, 1.2); // Larger disk-like sphere
+        setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Purple color
+        drawSphere();
+    gPop();
+
+    // Draw the smaller disk (body)
+    gPush();
+        gTranslate(0, 2, 0); // Position slightly below the head
+        gScale(0.9, 0.5, 0.9); // Smaller, flatter sphere
+        setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Same purple color
+        drawSphere();
+    gPop();
+}
+
+function drawTentacle(xOffset, tentacleIndex) {
+    gPush();
+      gTranslate(xOffset, 1.5, 0); // Move up slightly to attach to body
+      for (let i = 0; i < 5; i++) {
+        gTranslate(0, -0.5, 0); // Move each segment downward
+        
+        let angle = Math.sin(TIME * 2 + i + tentacleIndex) * 20; // Oscillation
+        gRotate(angle, 1, 0, 0); // Rotate in the x direction (waving effect)
+
+        gScale(0.15, 0.7, 0.15); // Thinner tentacles
+        setColor(vec4(0.6, 0.48, 0.0, 1.0)); // Tentacle color (RGB 153, 122, 0)
+        drawSphere();
+      }
+    gPop();
+}
+
+
+
+
+
