@@ -88,7 +88,7 @@ window.onload = function init() {
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 0.5, 0.5, 1.0, 1.0 );
+    gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
     
     gl.enable(gl.DEPTH_TEST);
 
@@ -352,21 +352,24 @@ function drawTorso() {
     gPop();
 }
 
-function animateArms() {
-    let A = 20;   // Maximum outward swing angle
-    let w = 0.6;  // Frequency of swinging motion
 
-    return A * Math.abs(Math.sin(w * TIME)); // Always positive (midpoint to outward)
+function animateArms() {
+    let A = 35;   // max angle
+    let w = 0.6;  //freq
+
+    let leftSwing = A * Math.abs(Math.sin(w * TIME));  // Normal motion
+    let rightSwing = A * Math.abs(Math.sin((w * TIME)+ Math.PI/2)); // Opposite motion
+
+    return { leftSwing, rightSwing };
 }
 
-
 function drawArms() {
-    let armSwing = animateArms(); // Get swing angle (only outward)
+    let { leftSwing, rightSwing } = animateArms(); // Get alternating arm angles
 
     // Left Arm (Swing from Shoulder)
     gPush();
         gTranslate(-1.5, 0.4, 0); // Move to shoulder joint
-        gRotate(-armSwing, 2, 0, 1); // Swing outward (left side)
+        gRotate(-leftSwing, 2, 0, 1); // Swing outward (left side)
         gTranslate(0, -0.5, 0); // Move down to align arm
         gScale(0.3, 1.0, 0.3); // Arm size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
@@ -376,7 +379,7 @@ function drawArms() {
     // Right Arm (Mirror Swing from Shoulder)
     gPush();
         gTranslate(1.5, 0.4, 0); // Move to shoulder joint
-        gRotate(armSwing, -2, 0, 1); // Mirror swing outward (right side)
+        gRotate(rightSwing, -2, 0, 1); // Mirror swing outward (right side)
         gTranslate(0, -0.5, 0); // Move down to align arm
         gScale(0.3, 1.0, 0.3); // Arm size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
@@ -384,28 +387,31 @@ function drawArms() {
     gPop();
 }
 
-
 function drawLeftLeg() {
+    let { leftLegSwing, leftKneeBend } = animateLegs(); // Get animation values
+
     gPush();
         gTranslate(-0.5, -1.5, 0); // Move below the torso
-        gRotate(-10, 0, 10, 1); // Rotate slightly downward
+        gRotate(-20, 0, 1, 0);  // Match torso rotation (slightly left)
+        gRotate(leftLegSwing, 1, 0, 0); // Swing from hip joint
         gScale(0.3, 0.9, 0.3); // Upper leg size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
         drawCube();
 
-        // Lower Leg
+        // Lower Leg (Pivot at Back of Knee)
         gPush();
-            gTranslate(0, -0.85, 0); // Adjust downward connection
-            gRotate(20, 1, 0, 0); // Bend slightly forward
+            gTranslate(0, -1.5, -0.1); // Move attachment slightly backward
+            gRotate(leftKneeBend, 1, 0, 0); // Dynamic knee bend
+            gTranslate(0, 0.2, 0); // Shift to compensate for pivot change
             gScale(1, 0.6, 1); // Shorter lower leg
-            setColor(vec4(0.0, 1.0, 1.0, 1.0)); // Debug color
+            setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Debug color
             drawCube();
 
-            // Foot (Thin & Heel Attached)
+            // Foot (Stays with Lower Leg)
             gPush();
-                gTranslate(0, -1.3, 1.0); // Move slightly down & back for heel alignment
-                gScale(1.0, 0.1, 1.0); // Thin foot like a 2D plane
-                setColor(vec4(0.2, 0.2, 0.2, 1.0)); // Darker foot color
+                gTranslate(0, -1.3, 1.0); // Attach to lower leg
+                gScale(1.0, 0.1, 1.0); // Thin foot
+                setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Darker foot color
                 drawCube();
             gPop();
 
@@ -414,32 +420,53 @@ function drawLeftLeg() {
 }
 
 function drawRightLeg() {
+    let { rightLegSwing, rightKneeBend } = animateLegs(); // Get animation values
+
     gPush();
-        gTranslate(0.5, -1.5, 0); // Mirror: Move to the right
-        gRotate(10, 0, -10, 1); // Mirror: Rotate slightly downward
-        gScale(0.3, 0.9, 0.3); // Same upper leg size
+        gTranslate(0.5, -1.5, 0); // Move to right hip
+        gRotate(-20, 0, 1, 0);  // Match torso rotation (slightly left)
+        gRotate(rightLegSwing, 1, 0, 0); // Swing from hip joint
+        gScale(0.3, 0.9, 0.3); // Upper leg size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
         drawCube();
 
-        // Lower Leg
+        // Lower Leg (Pivot at Back of Knee)
         gPush();
-            gTranslate(0, -0.85, 0); // Adjust downward connection
-            gRotate(20, 1, 0, 0); // Bend slightly forward
+            gTranslate(0, -1.5, -0.1); // Move attachment slightly backward
+            gRotate(rightKneeBend, 1, 0, 0); // Dynamic knee bend
+            gTranslate(0, 0.2, 0); // Shift to compensate for pivot change
             gScale(1, 0.6, 1); // Shorter lower leg
-            setColor(vec4(0.0, 1.0, 1.0, 1.0)); // Debug color
+            setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Debug color
             drawCube();
 
-            // Foot (Thin & Heel Attached)
+            // Foot (Stays with Lower Leg)
             gPush();
-                gTranslate(0, -1.3, 1.0); // Same foot position as left leg
-                gScale(1.0, 0.1, 1.0); // Thin foot like a 2D plane
-                setColor(vec4(0.2, 0.2, 0.2, 1.0)); // Darker foot color
+                gTranslate(0, -1.3, 1.0); // Attach to lower leg
+                gScale(1.0, 0.1, 1.0); // Thin foot
+                setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Darker foot color
                 drawCube();
             gPop();
 
         gPop();
     gPop();
 }
+
+
+function animateLegs() {
+    let A = 25;  // Maximum kicking angle for upper leg
+    let B = 30;  // Maximum knee bending angle
+    let w = 0.4; // Frequency of motion
+
+    let leftLegSwing = A * Math.sin(w * TIME);  // Upper leg motion
+    let rightLegSwing = A * Math.sin(w * TIME + Math.PI); // Right leg moves opposite
+
+    let leftKneeBend = B * Math.max(0, Math.cos(w * TIME));  // Knee bends only when moving backward
+    let rightKneeBend = B * Math.max(0, Math.cos(w * TIME + Math.PI)); // Opposite phase for right knee
+
+    return { leftLegSwing, rightLegSwing, leftKneeBend, rightKneeBend };
+}
+
+
 
 function drawLegs(){
     drawLeftLeg();
@@ -449,10 +476,13 @@ function drawLegs(){
 function animateAstronaut(dt) {
     let A = 1.0;  // Amplitude for X movement (smaller movement)
     let B = 0.3;  // Amplitude for Y movement (smaller movement)
-    let w = 0.8;  // Lower frequency for slower movement
+    let w = 0.4;  // Lower frequency for slower movement
 
     let xOffset = A * Math.cos(w * TIME); // Smooth X movement
     let yOffset = B * Math.sin(w * TIME); // Smooth Y movement
 
     gTranslate(xOffset, yOffset, 0); // Apply translation in X and Y only
 }
+
+
+
