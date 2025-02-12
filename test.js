@@ -270,8 +270,7 @@ function render(timestamp) {
         drawHelmet();
         drawTorso();
         drawArms();
-        drawUpperLeftLeg();
-        drawUpperRightLeg()
+        drawLegs();
     gPop();
 
     if (animFlag) {
@@ -316,128 +315,104 @@ function drawTentacle(xOffset, tentacleIndex) {
 
 function drawHelmet() {
     gPush();
-        // Move to head position
         gTranslate(0, 2, 0);
+        gRotate(-5, 0, 1, 0);  // Slight turn to the left
         
-        // Rotate to face southwest (left + slightly down)
-        gRotate(-20, 0, 1, 0);  // Rotate left
-        gRotate(0, 1, 0, 0); // Tilt downward
-
-        // Helmet Outer Shell (White Sphere, Smaller & Horizontally Stretched)
+        // Helmet Outer Shell
         gPush();
-            gScale(0.9, 1.0, 1.2); // Make it slightly smaller
-            setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White helmet
+            gScale(0.8, 0.9, 0.8);
+            setColor(vec4(1.0, 1.0, 1.0, 1.0));
             drawSphere();
         gPop();
 
-        // Visor (Gold, Adjusted to Fit)
+        // Visor
         gPush();
-            gTranslate(0, 0, 0.7);  // Move forward (relative to helmet rotation)
-            gScale(0.7, 0.6, 0.65);  // Make visor proportionally smaller
-            setColor(vec4(0.8, 0.5, 0.1, 1.0)); // Golden visor
+            gTranslate(-0.1, 0, 0.4);  // Adjusted for slight turn
+            gScale(0.4, 0.6, 0.7);
+            setColor(vec4(1.0, 0.8, 0.0, 1.0));
             drawSphere();
         gPop();
-
     gPop();
 }
 
 function drawTorso() {
     gPush();
-        gTranslate(0, -0.1, 0); // Lower torso slightly for better alignment
-        gRotate(-20, 0, 1, 0);  // Rotate left
-        gRotate(0, 1, 0, 0); // Tilt downward
-        gScale(1.0, 1.2, 0.8); // Adjust depth (Z scaling) to make it a cuboid
-        setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White astronaut suit
+        gRotate(-5, 0, 1, 0);  // Match helmet rotation
+        gTranslate(0, 0.5, 0);
+        gScale(0.9, 1.4, 0.6);
+        setColor(vec4(1.0, 1.0, 1.0, 1.0));
         drawCube();
+
+        // Control panel buttons
+        gPush();
+            gTranslate(-0.05, 0.2, 0.31);
+            
+            // Top row - blue
+            drawButton(0, 0.2, vec4(0.0, 0.0, 1.0, 1.0));
+            drawButton(0, 0.1, vec4(0.0, 0.0, 1.0, 1.0));
+            
+            // Middle row - light blue
+            drawButton(0, 0, vec4(0.5, 0.5, 1.0, 1.0));
+            drawButton(0, -0.1, vec4(0.5, 0.5, 1.0, 1.0));
+            
+            // Bottom row - red
+            drawButton(0, -0.2, vec4(1.0, 0.0, 0.0, 1.0));
+            drawButton(0, -0.3, vec4(1.0, 0.0, 0.0, 1.0));
+        gPop();
+    gPop();
+}
+
+function drawButton(x, y, color) {
+    gPush();
+        gTranslate(x, y, 0);
+        gScale(0.1, 0.1, 0.05);
+        setColor(color);
+        drawSphere();
     gPop();
 }
 
 function drawArms() {
     // Left Arm
     gPush();
-        gTranslate(-1.5, -0.1, 0); // Position on left side of torso
-        gRotate(-30, 0, 0, 1); // Rotate slightly downward
-        gScale(0.3, 1.0, 0.3); // Thin cuboid for the arm
-        setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
+        gRotate(-5, 0, 1, 0);  // Match body rotation
+        gTranslate(-0.2, 0.5, -1.2);
+        gRotate(-30, 1, 0, 0);
+        gScale(0.25, 0.8, 0.25);
+        setColor(vec4(1.0, 1.0, 1.0, 1.0));
         drawCube();
     gPop();
 
     // Right Arm
     gPush();
-        gTranslate(1.5, -0.1, 0); // Position on right side of torso
-        gRotate(30, 0, 0, 1); // Rotate slightly downward
-        gScale(0.3, 1.0, 0.3); // Thin cuboid for the arm
-        setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
+        gRotate(-5, 0, 1, 0);  // Match body rotation
+        gTranslate(-0.2, 0.5, 1.2);
+        gRotate(30, 1, 0, 0);
+        gScale(0.25, 0.8, 0.25);
+        setColor(vec4(1.0, 1.0, 1.0, 1.0));
         drawCube();
     gPop();
 }
 
-function drawUpperLeftLeg() {
+function drawLegs() {
+    // Left Leg
     gPush();
-        gTranslate(-0.5, -1.5, 0); // Move below the torso
-        gRotate(-10, 0, 10, 1); // Rotate slightly downward
-        gScale(0.3, 0.9, 0.3); // Upper leg size
-        setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
+        gRotate(-5, 0, 1, 0);  // Match body rotation
+        gTranslate(-0.2, -0.8, -0.4);
+        gRotate(-15, 1, 0, 0);
+        gScale(0.3, 0.8, 0.3);
+        setColor(vec4(1.0, 1.0, 1.0, 1.0));
         drawCube();
-
-        // Lower Leg
-        gPush();
-            gTranslate(0, -0.85, 0); // Adjust downward connection
-            gRotate(20, 1, 0, 0); // Bend slightly forward
-            gScale(1, 0.6, 1); // Shorter lower leg
-            setColor(vec4(0.0, 1.0, 1.0, 1.0)); // Debug color
-            drawCube();
-
-            // Foot (Thin & Heel Attached)
-            gPush();
-                gTranslate(0, -1.3, 1.0); // Move slightly down & back for heel alignment
-                gScale(1.0, 0.1, 1.0); // Thin foot like a 2D plane
-                setColor(vec4(0.2, 0.2, 0.2, 1.0)); // Darker foot color
-                drawCube();
-            gPop();
-
-        gPop();
     gPop();
-}
 
-function drawUpperRightLeg() {
+    // Right Leg
     gPush();
-        gTranslate(0.5, -1.5, 0); // Mirror: Move to the right
-        gRotate(10, 0, -10, 1); // Mirror: Rotate slightly downward
-        gScale(0.3, 0.9, 0.3); // Same upper leg size
-        setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
+        gRotate(-5, 0, 1, 0);  // Match body rotation
+        gTranslate(-0.2, -0.8, 0.4);
+        gRotate(15, 1, 0, 0);
+        gScale(0.3, 0.8, 0.3);
+        setColor(vec4(1.0, 1.0, 1.0, 1.0));
         drawCube();
-
-        // Lower Leg
-        gPush();
-            gTranslate(0, -0.85, 0); // Adjust downward connection
-            gRotate(20, 1, 0, 0); // Bend slightly forward
-            gScale(1, 0.6, 1); // Shorter lower leg
-            setColor(vec4(0.0, 1.0, 1.0, 1.0)); // Debug color
-            drawCube();
-
-            // Foot (Thin & Heel Attached)
-            gPush();
-                gTranslate(0, -1.3, 1.0); // Same foot position as left leg
-                gScale(1.0, 0.1, 1.0); // Thin foot like a 2D plane
-                setColor(vec4(0.2, 0.2, 0.2, 1.0)); // Darker foot color
-                drawCube();
-            gPop();
-
-        gPop();
     gPop();
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
