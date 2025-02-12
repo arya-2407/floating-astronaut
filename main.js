@@ -267,6 +267,7 @@ function render(timestamp) {
 
     // Draw Astronaut Floating
     gPush();
+        animateAstronaut(dt); // Apply whole-body floating motion
         drawHelmet();
         drawTorso();
         drawArms();
@@ -351,25 +352,38 @@ function drawTorso() {
     gPop();
 }
 
+function animateArms() {
+    let A = 20;   // Maximum outward swing angle
+    let w = 0.6;  // Frequency of swinging motion
+
+    return A * Math.abs(Math.sin(w * TIME)); // Always positive (midpoint to outward)
+}
+
+
 function drawArms() {
-    // Left Arm
+    let armSwing = animateArms(); // Get swing angle (only outward)
+
+    // Left Arm (Swing from Shoulder)
     gPush();
-        gTranslate(-1.5, -0.1, 0); // Position on left side of torso
-        gRotate(-30, 0, 0, 1); // Rotate slightly downward
-        gScale(0.3, 1.0, 0.3); // Thin cuboid for the arm
+        gTranslate(-1.5, 0.4, 0); // Move to shoulder joint
+        gRotate(-armSwing, 2, 0, 1); // Swing outward (left side)
+        gTranslate(0, -0.5, 0); // Move down to align arm
+        gScale(0.3, 1.0, 0.3); // Arm size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
         drawCube();
     gPop();
 
-    // Right Arm
+    // Right Arm (Mirror Swing from Shoulder)
     gPush();
-        gTranslate(1.5, -0.1, 0); // Position on right side of torso
-        gRotate(30, 0, 0, 1); // Rotate slightly downward
-        gScale(0.3, 1.0, 0.3); // Thin cuboid for the arm
+        gTranslate(1.5, 0.4, 0); // Move to shoulder joint
+        gRotate(armSwing, -2, 0, 1); // Mirror swing outward (right side)
+        gTranslate(0, -0.5, 0); // Move down to align arm
+        gScale(0.3, 1.0, 0.3); // Arm size
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White suit color
         drawCube();
     gPop();
 }
+
 
 function drawLeftLeg() {
     gPush();
@@ -432,15 +446,13 @@ function drawLegs(){
     drawRightLeg();
 }
 
+function animateAstronaut(dt) {
+    let A = 1.0;  // Amplitude for X movement (smaller movement)
+    let B = 0.3;  // Amplitude for Y movement (smaller movement)
+    let w = 0.8;  // Lower frequency for slower movement
 
+    let xOffset = A * Math.cos(w * TIME); // Smooth X movement
+    let yOffset = B * Math.sin(w * TIME); // Smooth Y movement
 
-
-
-
-
-
-
-
-
-
-
+    gTranslate(xOffset, yOffset, 0); // Apply translation in X and Y only
+}
