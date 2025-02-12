@@ -270,8 +270,7 @@ function render(timestamp) {
         drawHelmet();
         drawTorso();
         drawArms();
-        drawUpperLeftLeg();
-        drawUpperRightLeg()
+        drawLegs();
     gPop();
 
     if (animFlag) {
@@ -372,7 +371,7 @@ function drawArms() {
     gPop();
 }
 
-function drawUpperLeftLeg() {
+function drawLeftLeg() {
     gPush();
         gTranslate(-0.5, -1.5, 0); // Move below the torso
         gRotate(-10, 0, 10, 1); // Rotate slightly downward
@@ -400,7 +399,7 @@ function drawUpperLeftLeg() {
     gPop();
 }
 
-function drawUpperRightLeg() {
+function drawRightLeg() {
     gPush();
         gTranslate(0.5, -1.5, 0); // Mirror: Move to the right
         gRotate(10, 0, -10, 1); // Mirror: Rotate slightly downward
@@ -428,6 +427,10 @@ function drawUpperRightLeg() {
     gPop();
 }
 
+function drawLegs(){
+    drawLeftLeg();
+    drawRightLeg();
+}
 
 
 
