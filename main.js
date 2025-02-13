@@ -327,7 +327,7 @@ function render(timestamp) {
 
 function drawJellyfishBody() {
     gPush();
-        gTranslate(0, 2.5, 0); // Position above the body
+        gTranslate(0.2, 2.5, 0); // Position above the body
         gRotate(580, 1, 1, 1); // Rotate 90 degrees along the X-axis
         gScale(1.2, 0.7, 1.2); // Scale shape
         setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Purple color
@@ -348,39 +348,39 @@ function drawJellyfishBody() {
 }
 
 function drawJellyfishTentacles() {
-    // Arrange the three attachment points vertically.
-    // Here the attachment points are defined relative to the disk’s underside.
-    // For example, top, mid, and bottom positions along Y.
+    // Updated attachment points.
     var tentacleBases = [
-        vec3(1.5, 0.3, 0.2),  // top of disk
-        vec3(0, 0.0, 0.0),  // middle of disk
-        vec3(-1.5, -0.3, -0.2)  // bottom of disk
+        vec3(4, 0.3, -0.1),  // top of disk
+        vec3(4, 0.3, -0.7),    // middle of disk
+        vec3(4, 0.3, -1.3)  // bottom of disk
     ];
     
-    // For each tentacle...
     for (var i = 0; i < tentacleBases.length; i++) {
         gPush();
-            // Move to the attachment point (only altering Y)
+            // Move to the tentacle's attachment point.
             gTranslate(tentacleBases[i][0], tentacleBases[i][1], tentacleBases[i][2]);
             
             // Build the tentacle as a chain of 5 segments.
             for (var seg = 0; seg < 5; seg++) {
+                // Draw the segment (its base is at the current origin).
                 gPush();
                     setColor(vec4(0.6, 0.48, 0.0, 1.0));
-                    // Each segment is drawn as a small elongated ellipse (scaled sphere).
                     gScale(0.15, 0.3, 0.15);
                     drawSphere();
                 gPop();
                 
-                // Translate downward along the local -Y axis.
-                gTranslate(0, -0.3, 0);
-                // Apply a slight rotation about the Z-axis to add a gentle curve
-                // while keeping all points in the Y plane (since Z remains zero).
-                gRotate(5, 0, 0, 1);
+                // Translate to the tip of the current segment.
+                gTranslate(0.0, 0.3, 0.0);
+                // Now rotate about the joint at the tip so that subsequent segments swing.
+                let angle = Math.sin(TIME * 2 + seg * 0.5 + i) * 10; // 10° amplitude oscillation
+                gRotate(angle, 0, 0, 1);
             }
         gPop();
     }
 }
+
+
+
 
 
 function drawTentacle(xOffset, tentacleIndex) {
