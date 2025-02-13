@@ -434,6 +434,9 @@ function drawTorso() {
         setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White astronaut suit
         drawCube();
     gPop();
+
+    drawBlueButton();
+    drawButtons();
 }
 
 
@@ -570,3 +573,43 @@ function animateAstronaut(dt) {
 
 
 
+
+function drawBlueButton() {
+    gPush();
+        gTranslate(-0.8, 0.5, 6);  // Position at the top
+        gScale(0.25, 0.25, 0.25);  // Larger size for emphasis
+        setColor(vec4(0.0, 0.0, 1.0, 1.0));  // Blue color
+        drawSphere();
+    gPop();
+}
+
+function drawButtons() {
+    let buttonPositions = [
+        vec3(-0.2, 0.2, 6),  // Row 1, Col 1 (Left)
+        vec3(0.2, 0.2, 6),   // Row 1, Col 2 (Right)
+
+        vec3(-0.2, 0.0, 6),  // Row 2, Col 1 (Left)
+        vec3(0.2, 0.0, 6),   // Row 2, Col 2 (Right)
+
+        vec3(-0.2, -0.2, 6), // Row 3, Col 1 (Left)
+        vec3(0.2, -0.2, 6)   // Row 3, Col 2 (Right)
+    ];
+
+    let buttonColors = [
+        vec4(1.0, 0.0, 0.0, 1.0), // Red
+        vec4(0.0, 1.0, 0.0, 1.0), // Green
+        vec4(0.0, 0.0, 1.0, 1.0), // Blue
+        vec4(1.0, 1.0, 0.0, 1.0), // Yellow
+        vec4(1.0, 0.0, 1.0, 1.0), // Magenta
+        vec4(0.0, 1.0, 1.0, 1.0)  // Cyan
+    ];
+
+    for (let i = 0; i < buttonPositions.length; i++) {
+        gPush();
+            gTranslate(buttonPositions[i][0], buttonPositions[i][1], buttonPositions[i][2]); // Position
+            gScale(0.1, 0.1, 0.1); // Smaller button size
+            setColor(buttonColors[i]); // Assign color
+            drawSphere(); // Draw button
+        gPop();
+    }
+}
