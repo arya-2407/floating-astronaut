@@ -137,7 +137,7 @@ window.onload = function init() {
         }
         //console.log(animFlag);
     };
-
+    initializeStars();
     render(0);
 }
 
@@ -232,6 +232,48 @@ function animateJellyfish(dt) {
     gTranslate(x, 2 + y, z); // Move the entire jellyfish (without rotation)
 }
 
+var numStars = 1000; // Number of stars
+var stars = [];
+
+function initializeStars() {
+    for (let i = 0; i < numStars; i++) {
+        stars.push({
+            x: Math.random() * 12 - 6, // Spread stars in X (-6 to 6)
+            y: Math.random() * 10 - 2, // Spread stars in Y (-2 to 8)
+            z: Math.random() * -5 - 2, // Spread stars in Z (-2 to -7)
+            scale: Math.random() * 0.015 + 0.02, // Smaller stars (0.02 to 0.12)
+            speed: Math.random() * 0.01 + 0.005 // Slow left-to-right movement
+        });
+    }
+}
+
+function animateStars() {
+    for (let i = 0; i < numStars; i++) {
+        stars[i].x += stars[i].speed; // Move left to right
+
+        // Reset if offscreen (beyond right edge at x > 6)
+        if (stars[i].x > 6) {
+            stars[i].x = Math.random() * -12 - 6; // Move it back offscreen on the left
+            stars[i].y = Math.random() * 10 - 2;  // Reset Y randomly
+            stars[i].z = Math.random() * -5 - 2;  // Keep Z depth random
+        }
+    }
+}
+
+function drawStars() {
+    setColor(vec4(1.0, 1.0, 1.0, 1.0)); // White stars
+
+    for (let i = 0; i < numStars; i++) {
+        gPush();
+            gTranslate(stars[i].x, stars[i].y, stars[i].z); // Position star
+            gScale(stars[i].scale, stars[i].scale, stars[i].scale); // Scale star
+            drawSphere(); // Render the star
+        gPop();
+    }
+}
+
+
+
 
 function render(timestamp) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -256,6 +298,11 @@ function render(timestamp) {
     // Set all the matrices
     setAllMatrices();
 
+    gPush();
+        animateStars();
+        drawStars();
+    gPop();
+
     // Move Jellyfish in a Circular Path
     gPush();
         animateJellyfish(dt); // Apply floating movement
@@ -264,6 +311,7 @@ function render(timestamp) {
         drawTentacle(0, 1);    // Middle tentacle
         drawTentacle(0.5, 2);  // Right tentacle
     gPop();
+
 
     // Draw Astronaut Floating
     gPush();
