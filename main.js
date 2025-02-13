@@ -225,12 +225,24 @@ let jellyfishAngle = 0; // Angle for circular motion
 function animateJellyfish(dt) {
     jellyfishAngle += dt * 20; // Adjust speed (20 degrees per second)
     
-    let x = Math.cos(radians(jellyfishAngle)) * 3; // Move in X
-    let y = Math.sin(radians(jellyfishAngle * 0.7)) * 1.5; // Up & Down bobbing
-    let z = Math.sin(radians(jellyfishAngle)) * 3; // Move in Z
-
-    gTranslate(x, 2 + y, z); // Move the entire jellyfish (without rotation)
+    let radius = 3;      // Circle radius
+    let baseY = 2;       // Base height for the jellyfish
+    
+    // Add an offset of 180° so that the jellyfish starts on the left.
+    let adjustedAngle = jellyfishAngle + 180;
+    
+    // Compute position along a circle (in the XZ plane).
+    let x = Math.cos(radians(adjustedAngle)) * radius;
+    let z = Math.sin(radians(adjustedAngle)) * radius;
+    
+    // Add some bobbing in Y.
+    let yBobbing = Math.sin(radians(jellyfishAngle * 0.7)) * 1.5;
+    
+    // Only translate the jellyfish to its new position.
+    gTranslate(x, baseY + yBobbing, z);
 }
+
+
 
 var numStars = 1000; // Number of stars
 var stars = [];
@@ -306,6 +318,7 @@ function render(timestamp) {
     // Move Jellyfish in a Circular Path
     gPush();
         animateJellyfish(dt); // Apply floating movement
+        gTranslate(-2, -3, 0); // Additional translation: negative X moves it left.
         drawJellyfishBody();
     gPop();
 
@@ -378,29 +391,6 @@ function drawJellyfishTentacles() {
         gPop();
     }
 }
-
-
-
-
-
-function drawTentacle(xOffset, tentacleIndex) {
-    gPush();
-      gTranslate(xOffset, 0, 1.5); // Move backward slightly to attach to the jellyfish body
-      gRotate(90, 1, 0, 0); // Rotate tentacle to be horizontal
-
-      for (let i = 0; i < 5; i++) {
-        gTranslate(0, 0.5, 0); // Move each segment forward
-
-        let angle = Math.sin(TIME * 2 + i + tentacleIndex) * 20; // Oscillation
-        gRotate(angle, 0, 1, 0); // Rotate in the **y** direction for a waving effect
-
-        gScale(0.15, 0.7, 0.15); // Thinner tentacles
-        setColor(vec4(0.6, 0.48, 0.0, 1.0)); // Tentacle color (RGB 153, 122, 0)
-        drawSphere();
-      }
-    gPop();
-}
-
 
 function drawHelmet() {
     gPush();
