@@ -259,10 +259,10 @@ function render(timestamp) {
     // Move Jellyfish in a Circular Path
     gPush();
         animateJellyfish(dt); // Apply floating movement
-        drawJellyfishBody();
-        drawTentacle(-0.5, 0); // Left tentacle
-        drawTentacle(0, 1);    // Middle tentacle
-        drawTentacle(0.5, 2);  // Right tentacle
+        drawJellyfish();
+        // drawTentacle(-0.5, 0); // Left tentacle
+        // drawTentacle(0, 1);    // Middle tentacle
+        // drawTentacle(0.5, 2);  // Right tentacle
     gPop();
 
     // Draw Astronaut Floating
@@ -279,23 +279,68 @@ function render(timestamp) {
 }
 
 
-function drawJellyfishBody() {
-    // Draw the larger disk (head)
-    gPush();
-        gTranslate(0, 2.5, 0); // Position above the body
-        gScale(1.2, 0.7, 1.2); // Larger disk-like sphere
-        setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Purple color
-        drawSphere();
-    gPop();
+// function drawJellyfishBody() {
+//     // Draw the larger disk (head)
+//     gPush();
+//         gTranslate(0, 2.5, 0); // Position above the body
+//         gScale(1.2, 0.7, 1.2); // Larger disk-like sphere
+//         setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Purple color
+//         drawSphere();
+//     gPop();
 
-    // Draw the smaller disk (body)
+//     // Draw the smaller disk (body)
+//     gPush();
+//         gTranslate(0, 2, 0); // Position slightly below the head
+//         gScale(0.9, 0.5, 0.9); // Smaller, flatter sphere
+//         setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Same purple color
+//         drawSphere();
+//     gPop();
+// }
+
+
+// Draws a jellyfish composed of a pulsating bell and several tentacles.
+function drawJellyfish() {
+    // Draw the bell (upper dome)
     gPush();
-        gTranslate(0, 2, 0); // Position slightly below the head
-        gScale(0.9, 0.5, 0.9); // Smaller, flatter sphere
-        setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Same purple color
+        // Use a pulsating scale for a lively effect.
+        // The sphere is scaled in y to form a dome-like shape.
+        var pulse = 1.0 + 0.1 * Math.sin(TIME * 5.0);  // Adjust pulse speed/amplitude as desired
+        gScale(1.0, 0.7 * pulse, 1.0);
         drawSphere();
     gPop();
+    
+    // Draw the tentacles (we use 6 tentacles arranged radially)
+    var tentacleCount = 6;
+    var tentacleLength = 1.5;  // Length of each tentacle
+    for (var i = 0; i < tentacleCount; i++) {
+        // Compute the angle for this tentacle (in degrees then convert to radians)
+        var angleDeg = i * (360 / tentacleCount);
+        var angleRad = angleDeg * Math.PI / 180;
+        // Tentacle bases are arranged in a circle of radius 0.5 at the bottom of the bell.
+        var baseX = 0.5 * Math.cos(angleRad);
+        var baseZ = 0.5 * Math.sin(angleRad);
+        
+        gPush();
+            // Move to the base of the tentacle.
+            // The bell’s bottom (after scaling) is at y = -0.7.
+            gTranslate(baseX, -0.7, baseZ);
+            // Adjust the cylinder so that its top end is at the origin.
+            // (Recall: our Cylinder is centered at the origin with height 1 along the z-axis.)
+            gTranslate(0, 0, -0.5);
+            // Rotate the cylinder so that its axis aligns with -y (i.e. hanging downward).
+            // Rotating by -90° about the x-axis sends the z-axis to -y.
+            gRotate(-90, 1, 0, 0);
+            // Add a slight bend for a more organic look.
+            var bend = 10 * Math.sin(TIME * 3 + i); // bend varies over time and per tentacle
+            gRotate(bend, 0, 0, 1);
+            // Scale the cylinder: make it slender in x and z, and stretch it along y (its length).
+            gScale(0.1, tentacleLength, 0.1);
+            drawCylinder();
+        gPop();
+    }
 }
+
+
 
 function drawTentacle(xOffset, tentacleIndex) {
     gPush();

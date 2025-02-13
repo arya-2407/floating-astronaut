@@ -241,7 +241,7 @@ function initializeStars() {
             x: Math.random() * 12 - 6, // Spread stars in X (-6 to 6)
             y: Math.random() * 10 - 2, // Spread stars in Y (-2 to 8)
             z: Math.random() * -5 - 2, // Spread stars in Z (-2 to -7)
-            scale: Math.random() * 0.015 + 0.02, // Smaller stars (0.02 to 0.12)
+            scale: Math.random() * 0.01 + 0.02, // Smaller stars (0.02 to 0.12)
             speed: Math.random() * 0.01 + 0.005 // Slow left-to-right movement
         });
     }
@@ -307,9 +307,6 @@ function render(timestamp) {
     gPush();
         animateJellyfish(dt); // Apply floating movement
         drawJellyfishBody();
-        drawTentacle(-0.5, 0); // Left tentacle
-        drawTentacle(0, 1);    // Middle tentacle
-        drawTentacle(0.5, 2);  // Right tentacle
     gPop();
 
 
@@ -329,31 +326,73 @@ function render(timestamp) {
 
 
 function drawJellyfishBody() {
-    // Draw the larger disk (head)
     gPush();
         gTranslate(0, 2.5, 0); // Position above the body
-        gScale(1.2, 0.7, 1.2); // Larger disk-like sphere
+        gRotate(580, 1, 1, 1); // Rotate 90 degrees along the X-axis
+        gScale(1.2, 0.7, 1.2); // Scale shape
         setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Purple color
         drawSphere();
     gPop();
 
-    // Draw the smaller disk (body)
     gPush();
-        gTranslate(0, 2, 0); // Position slightly below the head
+        gRotate(580, 1, 1, 1);
+        gTranslate(2, 1, 2); // Position slightly below the head
         gScale(0.9, 0.5, 0.9); // Smaller, flatter sphere
         setColor(vec4(0.5, 0.2, 0.8, 1.0)); // Same purple color
         drawSphere();
+        gPush();
+            gTranslate(0, 2.2, 0);
+            drawJellyfishTentacles();
+        gPop();
     gPop();
 }
 
+function drawJellyfishTentacles() {
+    // Arrange the three attachment points vertically.
+    // Here the attachment points are defined relative to the disk’s underside.
+    // For example, top, mid, and bottom positions along Y.
+    var tentacleBases = [
+        vec3(1.5, 0.3, 0.2),  // top of disk
+        vec3(0, 0.0, 0.0),  // middle of disk
+        vec3(-1.5, -0.3, -0.2)  // bottom of disk
+    ];
+    
+    // For each tentacle...
+    for (var i = 0; i < tentacleBases.length; i++) {
+        gPush();
+            // Move to the attachment point (only altering Y)
+            gTranslate(tentacleBases[i][0], tentacleBases[i][1], tentacleBases[i][2]);
+            
+            // Build the tentacle as a chain of 5 segments.
+            for (var seg = 0; seg < 5; seg++) {
+                gPush();
+                    setColor(vec4(0.6, 0.48, 0.0, 1.0));
+                    // Each segment is drawn as a small elongated ellipse (scaled sphere).
+                    gScale(0.15, 0.3, 0.15);
+                    drawSphere();
+                gPop();
+                
+                // Translate downward along the local -Y axis.
+                gTranslate(0, -0.3, 0);
+                // Apply a slight rotation about the Z-axis to add a gentle curve
+                // while keeping all points in the Y plane (since Z remains zero).
+                gRotate(5, 0, 0, 1);
+            }
+        gPop();
+    }
+}
+
+
 function drawTentacle(xOffset, tentacleIndex) {
     gPush();
-      gTranslate(xOffset, 1.5, 0); // Move up slightly to attach to body
+      gTranslate(xOffset, 0, 1.5); // Move backward slightly to attach to the jellyfish body
+      gRotate(90, 1, 0, 0); // Rotate tentacle to be horizontal
+
       for (let i = 0; i < 5; i++) {
-        gTranslate(0, -0.5, 0); // Move each segment downward
-        
+        gTranslate(0, 0.5, 0); // Move each segment forward
+
         let angle = Math.sin(TIME * 2 + i + tentacleIndex) * 20; // Oscillation
-        gRotate(angle, 1, 0, 0); // Rotate in the x direction (waving effect)
+        gRotate(angle, 0, 1, 0); // Rotate in the **y** direction for a waving effect
 
         gScale(0.15, 0.7, 0.15); // Thinner tentacles
         setColor(vec4(0.6, 0.48, 0.0, 1.0)); // Tentacle color (RGB 153, 122, 0)
@@ -361,6 +400,7 @@ function drawTentacle(xOffset, tentacleIndex) {
       }
     gPop();
 }
+
 
 function drawHelmet() {
     gPush();
@@ -457,7 +497,7 @@ function drawLeftLeg() {
 
             // Foot (Stays with Lower Leg)
             gPush();
-                gTranslate(0, -1.3, 1.0); // Attach to lower leg
+                gTranslate(0, -1.0, 1.0); // Attach to lower leg
                 gScale(1.0, 0.1, 1.0); // Thin foot
                 setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Darker foot color
                 drawCube();
@@ -489,7 +529,7 @@ function drawRightLeg() {
 
             // Foot (Stays with Lower Leg)
             gPush();
-                gTranslate(0, -1.3, 1.0); // Attach to lower leg
+                gTranslate(0, -1.0, 1.0); // Attach to lower leg
                 gScale(1.0, 0.1, 1.0); // Thin foot
                 setColor(vec4(1.0, 1.0, 1.0, 1.0)); // Darker foot color
                 drawCube();
