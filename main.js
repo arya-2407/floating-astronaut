@@ -223,24 +223,30 @@ var prevTime = 0; // Track the last frame's time
 let jellyfishAngle = 0; // Angle for circular motion
 
 function animateJellyfish(dt) {
-    jellyfishAngle += dt * 20; // Adjust speed (20 degrees per second)
+    jellyfishAngle += dt * 20; // Adjust speed (20° per second)
     
-    let radius = 3;      // Circle radius
+    let radius = 3;      // Base radius of the circular orbit
     let baseY = 2;       // Base height for the jellyfish
     
-    // Add an offset of 180° so that the jellyfish starts on the left.
+    // Add an offset so that the jellyfish starts on the left.
     let adjustedAngle = jellyfishAngle + 180;
     
-    // Compute position along a circle (in the XZ plane).
+    // Compute the position on the circle (in the XZ plane)
     let x = Math.cos(radians(adjustedAngle)) * radius;
     let z = Math.sin(radians(adjustedAngle)) * radius;
+    
+    // When the jellyfish is behind the astronaut (z negative), push it further back.
+    if (z < 0) {
+        z *= 2.5; // Increase the depth when moving behind (adjust factor as needed)
+    }
     
     // Add some bobbing in Y.
     let yBobbing = Math.sin(radians(jellyfishAngle * 0.7)) * 1.5;
     
-    // Only translate the jellyfish to its new position.
+    // Translate the jellyfish to its computed position.
     gTranslate(x, baseY + yBobbing, z);
 }
+
 
 
 
