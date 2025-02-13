@@ -318,7 +318,7 @@ function render(timestamp) {
     // Move Jellyfish in a Circular Path
     gPush();
         animateJellyfish(dt); // Apply floating movement
-        gTranslate(-2, -3, 0); // Additional translation: negative X moves it left.
+        gTranslate(-1, -3, 0); // Additional translation: negative X moves it left.
         drawJellyfishBody();
     gPop();
 
