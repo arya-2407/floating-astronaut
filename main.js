@@ -576,7 +576,7 @@ function animateAstronaut(dt) {
 
 function drawBlueButton() {
     gPush();
-        gTranslate(-0.8, 0.5, 6);  // Position at the top
+        gTranslate(-0.8, 0.5, 0.5);  // Position at the top
         gScale(0.25, 0.25, 0.25);  // Larger size for emphasis
         setColor(vec4(0.0, 0.0, 1.0, 1.0));  // Blue color
         drawSphere();
@@ -596,12 +596,12 @@ function drawButtons() {
     ];
 
     let buttonColors = [
-        vec4(1.0, 0.0, 0.0, 1.0), // Red
-        vec4(0.0, 1.0, 0.0, 1.0), // Green
-        vec4(0.0, 0.0, 1.0, 1.0), // Blue
-        vec4(1.0, 1.0, 0.0, 1.0), // Yellow
-        vec4(1.0, 0.0, 1.0, 1.0), // Magenta
-        vec4(0.0, 1.0, 1.0, 1.0)  // Cyan
+        vec4(1.0, 0.0, 0.0, 0), // Red
+        vec4(0.0, 1.0, 0.0, 0), // Green
+        vec4(0.0, 0.0, 1.0, 0), // Blue
+        vec4(1.0, 1.0, 0.0, 0), // Yellow
+        vec4(1.0, 0.0, 1.0, 0), // Magenta
+        vec4(0.0, 1.0, 1.0, 0)  // Cyan
     ];
 
     for (let i = 0; i < buttonPositions.length; i++) {
