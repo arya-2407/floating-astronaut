@@ -126,19 +126,23 @@ window.onload = function init() {
        "shininess"),materialShininess );
 
 
-    document.getElementById("animToggleButton").onclick = function() {
-        if( animFlag ) {
-            animFlag = false;
-        }
-        else {
-            animFlag = true;
-            resetTimerFlag = true;
-            window.requestAnimFrame(render);
-        }
-        //console.log(animFlag);
-    };
+    // document.getElementById("animToggleButton").onclick = function() {
+    //     if( animFlag ) {
+    //         animFlag = false;
+    //     }
+    //     else {
+    //         animFlag = true;
+    //         resetTimerFlag = true;
+    //         window.requestAnimFrame(render);
+    //     }
+    //     //console.log(animFlag);
+    // };
+
     initializeStars();
-    render(0);
+    
+    animFlag = true;
+    resetTimerFlag = true;
+    window.requestAnimFrame(render);
 }
 
 // Sets the modelview and normal matrix in the shaders
